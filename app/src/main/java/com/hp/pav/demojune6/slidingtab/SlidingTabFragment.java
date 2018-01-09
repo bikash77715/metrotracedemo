@@ -1,4 +1,4 @@
-package com.hp.pav.demojune6;
+package com.hp.pav.demojune6.slidingtab;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -10,6 +10,8 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.astuetz.PagerSlidingTabStrip;
+import com.hp.pav.demojune6.helper.CustomAdapter;
+import com.hp.pav.demojune6.R;
 
 /**
  * Created by Pav on 6/12/2017.

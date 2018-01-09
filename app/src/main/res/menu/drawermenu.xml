@@ -8,15 +8,15 @@
         android:icon="@mipmap/ic_launcher"
         />
 
-    <item android:title="Introduction"
-        android:id="@+id/intro"
-        />
-
     <item android:title="Map"
         android:id="@+id/drawer_map"
         />
 
-    <item android:title="Sliding tab"
-        android:id="@+id/sliding_tab"
-        />
+    <!--<item android:title="Add route"-->
+        <!--android:id="@+id/add_route"-->
+        <!--/>-->
+    <!---->
+    <!--<item android:title="Sliding tab"-->
+        <!--android:id="@+id/sliding_tab"-->
+        <!--/>-->
 </menu>

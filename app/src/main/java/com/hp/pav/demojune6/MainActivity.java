@@ -37,7 +37,7 @@ public class MainActivity extends AppCompatActivity {
                     e.printStackTrace();
                 }
 
-                Intent i = new Intent(MainActivity.this, LoginActivity.class);
+                Intent i = new Intent(MainActivity.this, HomeActivity.class);
                 startActivity(i);
             }
         };

@@ -1,11 +1,12 @@
-package com.hp.pav.demojune6;
+package com.hp.pav.demojune6.helper;
 
 import android.content.Context;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
-import android.support.v4.view.PagerAdapter;
+
+import com.hp.pav.demojune6.slidingtab.FirstFragment;
 
 /**
  * Created by Pav on 6/12/2017.
@@ -28,11 +29,8 @@ public class CustomAdapter extends FragmentStatePagerAdapter {
             case 0:
                 return new FirstFragment();
 
-            case 1:
-                return new SecondFragment();
 
-            case 2:
-                return new ThirdFragment();
+
 
         }
         return null;

@@ -1,7 +1,6 @@
 package com.hp.pav.demojune6;
 
-import android.content.Intent;
-import android.content.SharedPreferences;
+import android.app.ProgressDialog;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -12,7 +11,10 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
-import android.widget.ImageView;
+
+import com.hp.pav.demojune6.fragments.AddRouteFragment;
+import com.hp.pav.demojune6.fragments.MapFragmet;
+import com.hp.pav.demojune6.fragments.RouteListFragment;
 
 /**
  * Created by Pav on 6/7/2017.
@@ -46,13 +48,13 @@ public class HomeActivity extends AppCompatActivity {
 //        headerimage.setImageResource(R.drawable.drawerheader);
 
         setSupportActionBar(toolbar);
-        getSupportActionBar().setTitle("Drawer App");
+        getSupportActionBar().setTitle("Select Route");
 
         drawerToggle = new ActionBarDrawerToggle(HomeActivity.this, drawerLayout, toolbar, R.string.open, R.string.close);
         drawerLayout.setDrawerListener(drawerToggle);
 
         fragmentTransaction = getSupportFragmentManager().beginTransaction();
-        fragmentTransaction.add(R.id.view, new IntroductionFragment());
+        fragmentTransaction.add(R.id.view, new RouteListFragment());
         fragmentTransaction.commit();
 
         navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
@@ -61,30 +63,31 @@ public class HomeActivity extends AppCompatActivity {
 
                 switch (item.getItemId()){
 
-                    case R.id.intro:
-                        fragmentTransaction = getSupportFragmentManager().beginTransaction();
-                        fragmentTransaction.replace(R.id.view, new IntroductionFragment());
-                        fragmentTransaction.commit();
-                        getSupportActionBar().setTitle("Introduction");
-                        drawerLayout.closeDrawers();
-                        break;
+//                    case R.id.add_route:
+//                        fragmentTransaction = getSupportFragmentManager().beginTransaction();
+//                        fragmentTransaction.replace(R.id.view, new AddRouteFragment());
+//                        fragmentTransaction.commit();
+//
+//                        getSupportActionBar().setTitle("Add new route");
+//                        drawerLayout.closeDrawers();
+//                        break;
 
-                    case R.id.sliding_tab:
-                        fragmentTransaction = getSupportFragmentManager().beginTransaction();
-                        fragmentTransaction.replace(R.id.view, new SlidingTabFragment());
-                        fragmentTransaction.commit();
-
-                        getSupportActionBar().setTitle("Sliding tab");
-                        drawerLayout.closeDrawers();
-
-                        break;
+//                    case R.id.sliding_tab:
+//                        fragmentTransaction = getSupportFragmentManager().beginTransaction();
+//                        fragmentTransaction.replace(R.id.view, new SlidingTabFragment());
+//                        fragmentTransaction.commit();
+//
+//                        getSupportActionBar().setTitle("Sliding tab");
+//                        drawerLayout.closeDrawers();
+//
+//                        break;
 
                     case R.id.home:
                         fragmentTransaction = getSupportFragmentManager().beginTransaction();
-                        fragmentTransaction.replace(R.id.view, new IntroductionFragment());
+                        fragmentTransaction.replace(R.id.view, new RouteListFragment());
                         fragmentTransaction.commit();
 
-                        getSupportActionBar().setTitle("Drawer app");
+                        getSupportActionBar().setTitle("Select route");
                         drawerLayout.closeDrawers();
 
                         break;
@@ -97,7 +100,7 @@ public class HomeActivity extends AppCompatActivity {
 
                     case R.id.drawer_map:
                         fragmentTransaction = getSupportFragmentManager().beginTransaction();
-                        fragmentTransaction.replace(R.id.view, new DrawerMapFragmet());
+                        fragmentTransaction.replace(R.id.view, new MapFragmet());
                         fragmentTransaction.commit();
 
                         getSupportActionBar().setTitle(" Map ");
@@ -118,4 +121,7 @@ public class HomeActivity extends AppCompatActivity {
         super.onPostCreate(savedInstanceState);
         drawerToggle.syncState();
     }
+
+
+
 }
