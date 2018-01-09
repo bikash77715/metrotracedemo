@@ -61,7 +61,7 @@ public class MapFragmet extends Fragment implements OnMapReadyCallback {
     private Map<String, LatLng> stopsMap;
     private String[] stop_list;
 
-    private ArrayList<Transport> transports;
+    private ArrayList<Transport> transports_loaded, transports;
     private TransportHelper transportHelper;
 
     private ArrayList<Marker> markers;
@@ -189,15 +189,15 @@ public class MapFragmet extends Fragment implements OnMapReadyCallback {
 
     }
 
-    private String[] getStopList(Map<String, LatLng> stopsMap) {
-        String[] strings = new String[20];
-        int i = 0;
-        for(Object key: stopsMap.keySet()){
-            strings[i] = key.toString();
-            i++;
-        }
-        return strings;
-    }
+//    private String[] getStopList(Map<String, LatLng> stopsMap) {
+//        String[] strings = new String[20];
+//        int i = 0;
+//        for(Object key: stopsMap.keySet()){
+//            strings[i] = key.toString();
+//            i++;
+//        }
+//        return strings;
+//    }
 
     private void setStopList() {
         int n = stopsMap.size();
@@ -232,29 +232,25 @@ public class MapFragmet extends Fragment implements OnMapReadyCallback {
         );
 
         if(route_no != 0){
+            transports_loaded = transportHelper.getTransports(route_no);
+            transports = transports_loaded;
             stopsMap = stopsHelper.getStopsMap(route_no);
 
             setStopList();
             Context context = getContext();
             drop_stops.setAdapter(new ArrayAdapter<String>(context,android.R.layout.simple_spinner_dropdown_item, stop_list));
 
-            drop_stops.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-                @Override
-                public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                    if(i!=0){
-
-                        Object selectedObj = adapterView.getItemAtPosition(i);
-                        String destination = selectedObj.toString();
-                        LatLng latLng = stopsMap.get(destination);
-                        user.setDestination(latLng);
-                    }
-                }
-
-                @Override
-                public void onNothingSelected(AdapterView<?> adapterView) {
-
-                }
-            });
+//            drop_stops.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+//                @Override
+//                public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+//
+//                }
+//
+//                @Override
+//                public void onNothingSelected(AdapterView<?> adapterView) {
+//
+//                }
+//            });
             switch (route_no){
                 case 9:
                     route9_polygon = drawPolygon();
@@ -271,9 +267,89 @@ public class MapFragmet extends Fragment implements OnMapReadyCallback {
                     break;
             }
 
+            drop_stops.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                @Override
+                public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                    if(i!=0){
+
+                        Object selectedObj = adapterView.getItemAtPosition(i);
+                        String destination = selectedObj.toString();
+                        LatLng latLng = stopsMap.get(destination);
+                        user.setDestination(latLng);
+                        transports = filterTransports();
+                        ((AppCompatActivity)getActivity()).getSupportActionBar().setTitle("Transports going to"+destination);
+                    }
+                }
+
+                @Override
+                public void onNothingSelected(AdapterView<?> adapterView) {
+
+                }
+            });
+
             pinTransports();
         }
 
+    }
+
+    private ArrayList<Transport> filterTransports() {
+        ArrayList<double[]> vector_list = calculateVectors();
+        double[] cosine_values = calculateCosineValues(vector_list);
+
+        ArrayList<Transport> filtered_transports= new ArrayList<>();
+        for(int i=0; i<transports_loaded.size();i++){
+            double cosine_value = cosine_values[i];
+            if(cosine_value>=0.0 && cosine_value<=1){
+                filtered_transports.add(this.transports_loaded.get(i));
+            }
+        }
+
+        return filtered_transports;
+
+    }
+
+
+    private double[] calculateCosineValues(ArrayList<double[]> vector_list) {
+        int vector_size = vector_list.size();
+
+        double[] cosine_values = new double[vector_size-1];
+
+        double[] user_vector = vector_list.get(0);
+        double user_vector_mod, transport_vector_mod, cosine_value;
+
+        user_vector_mod = Math.sqrt(user_vector[0]*user_vector[0] + user_vector[1]*user_vector[1]);
+
+        for(int i=1; i < vector_size; i++){
+            double[] transport_vector = vector_list.get(i);
+            transport_vector_mod = Math.sqrt(transport_vector[0]*transport_vector[0] + transport_vector[1]*transport_vector[1]);
+
+            cosine_value = (user_vector[0]*transport_vector[0] + user_vector[1]*transport_vector[1])/(user_vector_mod*transport_vector_mod);
+            cosine_values[i-1] = cosine_value;
+        }
+
+        return cosine_values;
+    }
+
+    private ArrayList<double[]> calculateVectors() {
+        ArrayList<double[]> vector_list = new ArrayList<>();
+        double[] user_vector = new double[2];
+
+        user_vector[0] = user.getDestination().latitude - user.getPosition().latitude;
+        user_vector[1] = user.getDestination().longitude - user.getPosition().longitude;
+
+        vector_list.add(user_vector);
+
+        for(Transport transport: transports_loaded){
+            double[] transport_vector = new double[2];
+
+            transport_vector[0] = transport.getLatLng().latitude - transport.getLast_latLng().latitude;
+            transport_vector[1] = transport.getLatLng().longitude - transport.getLast_latLng().longitude;
+
+            vector_list.add(transport_vector);
+        }
+
+
+        return vector_list;
     }
 
     private Polyline drawPolyLine() {
@@ -372,15 +448,17 @@ public class MapFragmet extends Fragment implements OnMapReadyCallback {
         return polygon;
     }
 
+
+
+
     private void pinTransports() {
 
         count++;
 
-        ArrayList<Transport> transport_list = transportHelper.getTransports(route_no);
-
-        if(transport_list.isEmpty()){
+        if(transports.isEmpty()){
 
             ((AppCompatActivity)getActivity()).getSupportActionBar().setTitle("No transports available ");
+
 
         }else{
             if(!markers.isEmpty()){
@@ -389,7 +467,7 @@ public class MapFragmet extends Fragment implements OnMapReadyCallback {
                 }
             }
             markers = new ArrayList<>();
-            for(Transport transport: transport_list){
+            for(Transport transport: transports){
 //                if(route_bounds.contains(transport.getLatLng())){
 
 
@@ -408,7 +486,7 @@ public class MapFragmet extends Fragment implements OnMapReadyCallback {
             new CountDownTimer(5000, 1000) {
 
                 public void onTick(long millisUntilFinished) {
-                    message.setText("Load count= "+count+ " Refreshed in "+millisUntilFinished);
+                    message.setText( " interval: 5s"+" count= "+count);
                 }
 
                 public void onFinish() {

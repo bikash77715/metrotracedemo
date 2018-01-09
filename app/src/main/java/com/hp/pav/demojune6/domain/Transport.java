@@ -10,7 +10,7 @@ public class Transport {
 
     private String reg_no, type;
     private int route_no;
-    private LatLng latLng;
+    private LatLng latLng, last_latLng;
     private int direction;
     public Transport() {
     }
@@ -21,6 +21,7 @@ public class Transport {
         this.route_no = route_no;
         this.latLng = latLng;
         this.direction = direction;
+        this.last_latLng = latLng;
     }
 
     public String getReg_no() {
@@ -55,10 +56,15 @@ public class Transport {
         this.latLng = latLng;
     }
 
+    public LatLng getLast_latLng() {
+        return last_latLng;
+    }
+
     public void updateLatLng() {
 
 //        double x = 0.1, y =05;
 
+        this.last_latLng = getLatLng();
         double x = 0.0001, y =0.00001;
         if(direction == 0){
 
